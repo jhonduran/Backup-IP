@@ -1,16 +1,36 @@
-# This is a sample Python script.
+from netmiko import ConnectHandler
+from datetime import datetime
+from dotenv import load_dotenv
+import os
 
-# Press Ctrl+F5 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+load_dotenv()
 
+device = {
+    'device_type': 'hp_comware_telnet',
+    'host': '192.168.250.5',
+    'username': 'admin',
+    'password': os.getenv("SWITCH_PASSWORD")
+}
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press F9 to toggle the breakpoint.
+try:
+    print("Conectando...")
 
+    connection = ConnectHandler(**device)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    print("Conectado!")
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    output = connection.send_command("display current-configuration")
+
+    filename = f"backup_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
+
+    filepath = r"C:\Users\john2\OneDrive\EmpresaBackups\\" + filename
+
+    with open(filepath, "w") as f:
+        f.write(output)
+
+    print("✅ Backup guardado en OneDrive:", filepath)
+
+    connection.disconnect()
+
+except Exception as e:
+    print("❌ Error:", e)
