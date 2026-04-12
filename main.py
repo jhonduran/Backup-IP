@@ -50,8 +50,8 @@ hoy = datetime.now()
 dia = hoy.day
 
 # Solo ejecutar backups los días 15 y 28 de cada mes
-if dia not in [15, 28]:
-    print(f"ℹ️  Hoy es día {dia}. Los backups solo se ejecutan los días 15 y 28.")
+if dia not in [15, 29]:
+    print(f" Hoy es día {dia}. Los backups solo se ejecutan los días 15 y 28.")
     print("   Script finalizado sin ejecutar backups.")
     exit()   # Termina el script sin hacer nada
 
