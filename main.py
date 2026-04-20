@@ -9,9 +9,9 @@ load_dotenv()
 
 SWITCH_PASSWORD = os.getenv("SWITCH_PASSWORD")
 if not SWITCH_PASSWORD:
-    raise ValueError("❌ No se encontró SWITCH_PASSWORD en el archivo .env")
+    raise ValueError(" No se encontró SWITCH_PASSWORD en el archivo .env")
 
-print("✅ Contraseña cargada correctamente desde .env\n")
+print("Contraseña cargada correctamente desde .env\n")
 
 # ====================== DISPOSITIVOS ======================
 devices = [
@@ -51,14 +51,15 @@ devices = [
    {
         'name': 'Switch_10.2.0.12',
         'host': '10.2.0.12',
-        'port': 1030,
+        'port': 22,
         'use_netmiko': False
     },
    {
-        'name': 'Switch_10.2.0.11',
-        'host': '10.2.0.11',
-        'port': 1030,
-        'use_netmiko': False
+    'device_type': 'cisco_ios_telnet',      # ← Más tolerante que dell_powerconnect_telnet
+    'host': '10.2.0.11',
+    'username': 'admin',
+    'password': SWITCH_PASSWORD,
+    'name': 'Switch_10.2.0.11'
     },
    {
         'name': 'Switch_192.9.204.66',
@@ -78,7 +79,7 @@ devices = [
 BASE_PATH = r"C:\Users\pract3.sistemas\OneDrive\EmpresaBackups"
 os.makedirs(BASE_PATH, exist_ok=True)
 
-print("🚀 Iniciando backups automáticos...\n")
+print("Iniciando backups automáticos...\n")
 
 success_count = 0
 error_count = 0
@@ -88,7 +89,7 @@ for dev in devices:
     ip = dev['host']
 
     try:
-        print(f"🔌 Conectando a {name} ({ip})...")
+        print(f" Conectando a {name} ({ip})...")
 
         if dev.get('use_netmiko', True):
             # ====================== NETMIKO ======================
@@ -112,7 +113,7 @@ for dev in devices:
             # Solo entrar en enable si se definió secret
             if 'secret' in dev:
                 net_connect.enable()
-                print("   🔓 Modo enable activado")
+                print("Modo enable activado")
 
             command = "display current-configuration" if 'hp_comware' in dev['device_type'] else "show running-config"
             output = net_connect.send_command(command, read_timeout=120)
@@ -159,18 +160,18 @@ for dev in devices:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(output)
 
-        print(f"✅ Backup guardado → {filepath}")
+        print(f" Backup guardado → {filepath}")
         success_count += 1
 
     except Exception as e:
-        print(f"❌ Error en {name}: {e}")
+        print(f" Error en {name}: {e}")
         error_count += 1
 
 # ====================== RESUMEN ======================
 print("\n" + "="*90)
-print("🏁 RESUMEN FINAL")
+print(" RESUMEN FINAL")
 print("="*90)
-print(f"✅ Éxitos   : {success_count}")
-print(f"❌ Errores  : {error_count}")
-print(f"📂 Carpeta  : {BASE_PATH}")
+print(f" Éxitos   : {success_count}")
+print(f" Errores  : {error_count}")
+print(f" Carpeta  : {BASE_PATH}")
 print("="*90)
